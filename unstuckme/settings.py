@@ -27,7 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
 
-    "base"
+    "base.apps.BaseConfig"
 ]
 
 MIDDLEWARE = [
@@ -45,7 +45,9 @@ ROOT_URLCONF = "unstuckme.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            BASE_DIR/'templates'
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
