@@ -1,8 +1,9 @@
 from turtle import end_fill
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from urllib3 import encode_multipart_formdata
-from .models import Room
+from .models import Room, Topic
 from .forms import RoomForm
 
 # rooms = [
@@ -16,8 +17,18 @@ from .forms import RoomForm
 
 def home(req):
     # return HttpResponse("Home page")
-    rooms = Room.objects.all()
-    context = {"rooms": rooms}
+ 
+    q = req.GET.get('q') if req.GET.get('q') != None else ''
+    # rooms = Room.objects.filter(topic__name__icontains=q, name__icontains=q) #this requires q to match all parameters
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(host__username__icontains=q) |
+        Q(description__icontains=q)
+    )
+    topics = Topic.objects.all()
+    room_count=rooms.count()
+    context = {"rooms": rooms, "topics": topics, "room_count":room_count}
     return render(req, 'base/home.html', context)
 
 
@@ -60,3 +71,7 @@ def deleteRoom(req, pk):
         return redirect('home')
     context = {'obj':"\'"+room.name+"\' room"}
     return render(req, 'base/delete.html', context)
+
+def loginView(req):
+    context={}
+    return render(req, 'base/login_register.html', context)
