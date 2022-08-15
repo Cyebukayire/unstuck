@@ -31,7 +31,13 @@ def home(req):
     )
     topics = Topic.objects.all()
     room_count=rooms.count()
-    context = {"rooms": rooms, "topics": topics, "room_count":room_count}
+    # room_messages = Message.objects.all()
+    room_messages = Message.objects.filter(
+        Q(room__topic__name__icontains=q)
+    )
+
+    context = {"rooms": rooms, "topics": topics, 
+    "room_count":room_count, "room_messages": room_messages}
     return render(req, 'base/home.html', context)
 
 
@@ -52,7 +58,6 @@ def room(req, pk):
             body=req.POST.get('body')
         )
         room.participants.add(req.user)
-        print(participants)
         return redirect('room', pk=pk)
 
     context = {"room": room, "room_messages": room_messages, "participants": participants}
