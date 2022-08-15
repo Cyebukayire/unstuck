@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
-from .models import Room, Topic
+from .models import Room, Topic, Message
 from .forms import RoomForm
 from django.contrib.auth.forms import UserCreationForm
 
@@ -41,8 +41,21 @@ def room(req, pk):
     #     if i['id'] == int(pk):
     #         room = i
     room = Room.objects.get(id=pk)
+    room_messages = room.message_set.all().order_by('created') #set works for one to may relationship
+    participants = room.participants.all() #this works for many to many relationships
     # room = {"name": "learn withme broxk", "id": 2}
-    context = {"room": room}
+
+    if req.method=='POST':
+        message = Message.objects.create(
+            user = req.user,
+            room=room,
+            body=req.POST.get('body')
+        )
+        room.participants.add(req.user)
+        print(participants)
+        return redirect('room', pk=pk)
+
+    context = {"room": room, "room_messages": room_messages, "participants": participants}
     return render(req, 'base/room.html', context)
 
 @login_required(login_url='login')
@@ -134,3 +147,16 @@ def registerView(req):
             messages.error(req, "An error occured during registration")
     context={"form": form}
     return render(req, 'base/login_register.html', context)
+
+# Messages
+def deleteMessage(req, pk):
+    message = Message.objects.get(id=pk)
+
+    if req.user != message.user: #also add to check for Super user
+        return HttpResponse("You're not allowed here")
+
+    if req.method == 'POST':
+        message.delete()
+        return redirect('home')
+    context = {'obj': "the message"}
+    return render(req, 'base/delete.html', context)
