@@ -37,7 +37,7 @@ def home(req):
     )
 
     context = {"rooms": rooms, "topics": topics, 
-    "room_count":room_count, "room_messages": room_messages}
+    "room_count":room_count, "all_messages": room_messages}
     return render(req, 'base/home.html', context)
 
 
@@ -165,3 +165,12 @@ def deleteMessage(req, pk):
         return redirect('home')
     context = {'obj': "the message"}
     return render(req, 'base/delete.html', context)
+
+
+def userProfile(req, pk):
+    user = User.objects.get(id=pk)
+    rooms= user.room_set.all()
+    user_messages=user.message_set.all()
+    topics = Topic.objects.all()
+    context={"user": user, "rooms": rooms, "all_messages": user_messages, "topics": topics}
+    return render(req, 'base/profile.html', context)
