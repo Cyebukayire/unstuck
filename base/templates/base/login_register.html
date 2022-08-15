@@ -1,0 +1,36 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% if page == 'login' %}
+<div>
+    <form method='POST' action=''>
+        {% csrf_token %}
+        <label>Username: </lable>
+        <input type='text' placeholder='Enter Username' name='username' required/>
+
+        <label>Password: </lable>
+        <input type='password' placeholder='Enter Password' name='password' required/>
+
+        <input type="submit" value='login'/>
+    </form> 
+    <p>Don't have an account yet?</p>
+    <a href="{%url 'register'%}">Register here</a>
+</div>
+
+{% else %}
+
+<div>
+    <form method='POST' action=''>
+        {% csrf_token %}
+        {{form.as_p}} 
+        {% comment %} as_p wraps the form in the paragraph tags {% endcomment %}
+        <input type="submit" value='Register'/>
+    </form>
+
+    <p>Already have an account?</p>
+    <a href="{%url 'login'%}">Login here</a>
+</div>
+{%endif%}
+
+{% endblock content %}
