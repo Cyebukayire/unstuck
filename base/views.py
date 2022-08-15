@@ -69,7 +69,9 @@ def createRoom(req):
     if req.method == 'POST':
         form = RoomForm(req.POST)
         if form.is_valid:
-            form.save()
+            room = form.save(commit=False)
+            room.host = req.user
+            room.save()
             return redirect('home')
 
     context = {'form': form}
