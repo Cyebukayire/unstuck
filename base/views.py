@@ -15,8 +15,7 @@ from django.contrib.auth.forms import UserCreationForm
 #     {"id": 3, "name": "ML Engineers"}
 # ]
 
-# queryResult = ModelObj.objects.get(attribut='value')
-
+# queryResult = ModelObj.objects.get(attribut='value')g
 
 def home(req):
     # return HttpResponse("Home page")
